@@ -11,7 +11,7 @@ services:
     privileged: true
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./config:/config:ro
+      - ./:/app:ro
       - ./pocket:/pocket
     restart: unless-stopped
     networks:
