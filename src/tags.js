@@ -1,7 +1,7 @@
 class Tags {
   constructor(line) {
     let tags = /  :.*:$/.exec(line)
-    this.tags = tags ? tags[0].trim().split(':').filter(i => i) : null
+    this.tags = tags ? tags[0].trim().split(':').filter(i => i) : []
   }
 
   addTag(tag) {

@@ -6,17 +6,21 @@ RUN apk add --no-cache cargo openssl-dev
 
 RUN cargo install monolith
 
-RUN addgroup -g 1000 user \
-    && adduser -u 1000 -G user -s /bin/sh -D user
+ENV PATH "$PATH:/root/.cargo/bin"
 
-RUN mkdir /app \
-    && mkdir /pocket \
-    && chown user /pocket
+# RUN
+ # mkdir /app \
+    # && mkdir /pocket \
+    # && chown user /pocket
 
-USER user
+# RUN addgroup -g 1000 user \
+    # && adduser -u 1000 -G user -s /bin/sh -D user
+# USER user
 
 WORKDIR "/app"
 
-RUN npm i
+# RUN npm i
 
-CMD ["npm", "start"]
+ENTRYPOINT ["./entrypoint.sh"]
+# CMD ["npm", "start"]
+# CMD ["tail", "-f", "/bin/sh"]
