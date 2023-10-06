@@ -20,13 +20,13 @@ function delay(time) {
   return new Promise(resolve => setTimeout(resolve, time));
 }
 
-startPocketWatch()
+// startPocketWatch()
 
 function startPocketWatch() {
   fs.watch(POCKET_FILE, { persistent: false }, async (eventType) => {
     if (eventType !== "change") return
     console.log("\n\n", "--------", "new event!")
-    // await delay(1000);
+    await delay(1000);
     processNewRecord()
   })
 }
@@ -120,7 +120,7 @@ app.listen(PORT, () => {
 })
 
 // TODO
-// can Iopen these files in mobile browser?
+// can I open these files in mobile browser at all?
 // get first record from the top and look for duplicate, if found, download, compare both, if the same do nothing, and remove
 // process netire file not only top record
 // move entire heading to the top

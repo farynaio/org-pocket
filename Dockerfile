@@ -13,6 +13,13 @@ ENV PATH "$PATH:/root/.cargo/bin"
     # && mkdir /pocket \
     # && chown user /pocket
 
+RUN set -ex; \
+    apk add --no-cache shadow; \
+    deluser www-data; \
+    addgroup -g 33 -S www-data; \
+    adduser -u 33 -D -S -G www-data www-data; \
+    chown www-data:root -R /pocket;
+
 # RUN addgroup -g 1000 user \
     # && adduser -u 1000 -G user -s /bin/sh -D user
 # USER user
