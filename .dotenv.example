@@ -1,0 +1,5 @@
+PORT=3000
+DB_DIR="./pocket"
+POCKET_FILE=`${DB_DIR}/pocket.org`
+WWW_STORE=`${DB_DIR}/public`
+SERVER_BASE_URL="https://pocket.faryna.io"
