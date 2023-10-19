@@ -15,10 +15,10 @@ ENV PATH "$PATH:/root/.cargo/bin"
 
 RUN set -ex; \
     apk add --no-cache shadow; \
-    deluser www-data; \
-    addgroup -g 33 -S www-data; \
-    adduser -u 33 -D -S -G www-data www-data; \
-    chown www-data:root -R /pocket;
+    # deluser www-data; \
+    addgroup -g 33 -S git; \
+    adduser -u 33 -D -S -G git git; \
+    chown git:git -R /pocket;
 
 # RUN addgroup -g 1000 user \
     # && adduser -u 1000 -G user -s /bin/sh -D user

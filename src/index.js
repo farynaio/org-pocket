@@ -1,127 +1,138 @@
-const dotenv = require('dotenv')
-const dotenvExpand = require('dotenv-expand')
-const fs = require('fs')
-const express = require('express')
-const { execSync } = require('child_process')
+const dotenv = require("dotenv");
+const dotenvExpand = require("dotenv-expand");
+const fs = require("fs");
+const { exec } = require("child_process");
+const  moment = require("moment")
+const events = require("events")
+const util = require("util");
+const prependFile = require('prepend-file');
 
-dotenvExpand.expand(dotenv.config())
+dotenvExpand.expand(dotenv.config());
 
-const Tags = require('./tags')
+const { logger } = require("./logger");
 
-const DOWNLOADED_TAG = "downloaded"
+// const DB_DIR = process.env.DB_DIR;
+const POCKET_FILE = process.env.POCKET_FILE;
+const DOWNLOAD_FILE = process.env.DOWNLOAD_FILE;
+const WWW_STORE = process.env.WWW_STORE;
 
-const PORT = process.env.PORT
-const DB_DIR = process.env.DB_DIR
-const POCKET_FILE = process.env.POCKET_FILE
-const WWW_STORE = process.env.WWW_STORE
-const SERVER_BASE_URL = process.env.SERVER_BASE_URL
+class Watcher extends events.EventEmitter {
+  constructor(watchFile) {
+    super();
+    this.watchFile = watchFile;
+  }
 
-function delay(time) {
-  return new Promise(resolve => setTimeout(resolve, time));
+  start() {
+    fs.watch(this.watchFile, () => {
+      this.emit("process", this.watchFile);
+    });
+    logger.info("Watcher started")
+  }
 }
 
-// startPocketWatch()
-
-function startPocketWatch() {
-  fs.watch(POCKET_FILE, { persistent: false }, async (eventType) => {
-    if (eventType !== "change") return
-    console.log("\n\n", "--------", "new event!")
-    await delay(1000);
-    processNewRecord()
-  })
+async function processNewRecord(record) {
+  if (record.length) {
+    const url = getUrl(record)
+    downloadWebsite(url)
+    addPocketRecord(url)
+  }
 }
 
-function processNewRecord() {
-  fs.readFile(POCKET_FILE, 'utf-8', (err, fileContent) => {
-    if (err) {
-      throw err
-    }
-
-    const lines = fileContent.split('\n');
-    const firstLine = lines[0];
-    const tags = new Tags(firstLine)
-    console.log("fileContent", fileContent)
-    console.log("firstLine", firstLine)
-    console.log("tags", tags.getTags())
-    console.log("eventType", eventType)
-
-    if (!tags.getTags().includes(DOWNLOADED_TAG)) {
-      console.log("new entry!")
-      const url = getUrl(firstLine)
-      downloadWebsite(url)
-      markAsDownloaded(url, tags)
-    }
-  });
+function getUrl(record) {
+  const url = /(https?:\/\/[^ ]*)/.exec(record)[0]
+  if (!url) throw Error(`Invalid record ${record}`);
+  return new URL(url.trim());
 }
 
-function getUrl(line) {
-  let url = /http.*?  /.exec(line)
-  if (!url) throw Error(`Invalid line ${line}`)
-  return new URL(url[0].trim())
+function getArchiveFilename(url, withDatePrefix=true) {
+  const title = url.pathname.split("/").at(-1);
+  const datePrefix = moment().format("YYYYMMDDhhmm")
+  const result = `${url.host}-${title}${url.pathname.endsWith(".html") ? "" : ".html"}`;
+  return withDatePrefix ? `${datePrefix}-${result}` : result
+}
+
+function duplicateDownloadExists(url) {
+  const archiveFilenameSuffix = getArchiveFilename(url, false)
+  for (const file of fs.readdirSync(WWW_STORE)) {
+    if (file.endsWith(archiveFilenameSuffix)) return true
+  }
+  return false
 }
 
 function downloadWebsite(url) {
-  const title = url.pathname.split('/').at(-1)
-  const archiveTitle = `${url.hostname}-${title}.html`
-  execSync(`touch ${WWW_STORE}/${archiveTitle}`)
-}
+  const archiveFilename = getArchiveFilename(url)
+  const archivePath = `${WWW_STORE}/${archiveFilename}`
 
-function getLocalUrl(url) {
-  const title = url.pathname.split('/').at(-1)
-  const archiveTitle = `${url.hostname}-${title}.html`
-  return `${WWW_STORE}/${archiveTitle}`
-}
+  if (duplicateDownloadExists(url)) {
+    logger.info(`Article ${url.toString()} already downloaded`)
 
-function markAsDownloaded(url, tags) {
-  const fileContent = fs.readFileSync(POCKET_FILE, 'utf-8');
-  const lines = fileContent.split('\n');
-  tags.addTag(DOWNLOADED_TAG)
-  lines[0] = `* ${url.href}  ${tags.getTagsString()}`
-  lines.splice(1, 0, `[[${getLocalUrl(url)}]]`)
-  const updatedContent = lines.join('\n');
-  fs.writeFileSync(POCKET_FILE, updatedContent, 'utf-8');
-}
-
-function errorHandler (err, req, res, next) {
-  if (res.headersSent) {
-    return next(err)
-  }
-  res.status(500)
-  res.render('error', { error: err })
-}
-
-function logErrors (err, req, res, next) {
-  console.error(err.stack)
-  next(err)
-}
-
-function clientErrorHandler (err, req, res, next) {
-  if (req.xhr) {
-    res.status(500).send({ error: 'Something failed!' })
   } else {
-    next(err)
+    logger.info(`Downloading ${url.toString()} and saving as ${archivePath}`)
+    exec(`touch "${archivePath}"`, (error, stdout, stderr) => {
+      if (error) {
+        logger.error(`Downloading ${url.toString()} failed`)
+        throw error
+      }
+    });
   }
 }
 
-const app = express()
+function generateWebArchiveLink(url) {
+  return "https://gnu.org"
+}
 
-app.use(express.static('public'))
-app.use(logErrors)
-app.use(clientErrorHandler)
-app.use(errorHandler)
+async function addPocketRecord(url) {
+  const webArchiveLink = generateWebArchiveLink(url)
+  const data = `* ${url}
 
-app.use((err, req, res, next) => {
-  console.error(err.stack)
-  res.status(500).send('Something broke!')
-})
 
-app.listen(PORT, () => {
-  console.log(`Pocket app listening on PORT ${PORT}`)
-})
+[[./Sync/org-agenda-repo/pocket/public/${getArchiveFilename(url)}][link]]
+`
+// [[${webArchiveLink}][Web archive link]]
 
-// TODO
-// can I open these files in mobile browser at all?
-// get first record from the top and look for duplicate, if found, download, compare both, if the same do nothing, and remove
-// process netire file not only top record
-// move entire heading to the top
-// go line by line Pocket.org to find existing record, if exist add another download with timestamp
+  await prependFile(POCKET_FILE, data)
+}
+
+function delay(time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+
+const watcher = new Watcher(DOWNLOAD_FILE);
+
+watcher.on("process", file => {
+  delay(1000)
+
+  fs.readFile(file, "utf-8", async (err, data) => {
+    if (err) throw err;
+
+    // Every line is separate URL to download
+    if (data.trim().length) {
+      const records = data.split("\n");
+      let wereErrors = false
+      logger.info("foo", records)
+
+      for (const record of records) {
+        logger.info("record", record)
+        try {
+          await processNewRecord(record);
+
+        } catch (e) {
+          logger.error(e)
+          wereErrors = true
+        }
+      }
+
+      if (records.length && !wereErrors) {
+        fs.writeFile(file, "", err => {
+          if (err) {
+            logger.error(`Clearing ${file} failed`);
+          } else {
+            logger.info(`Cleared ${file}`);
+          }
+        })
+      }
+    }
+  })
+});
+
+watcher.start();
