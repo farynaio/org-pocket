@@ -1,9 +1,5 @@
 version: "3.3"
 
-# networks:
-#   nginx_shared_net:
-#     external: true
-
 services:
   pocket:
     container_name: pocket
@@ -11,8 +7,5 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./:/app
-      - /tmp/pocket:/pocket
+      - ./pocket:/pocket
     restart: unless-stopped
-    # networks:
-    #   nginx_shared_net:
-    #     ipv4_address: 172.20.0.20
