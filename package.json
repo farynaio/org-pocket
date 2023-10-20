@@ -6,7 +6,7 @@
     "start": "nodemon ./src/index.js"
   },
   "keywords": ["pocket", "self-hosted", "foss"],
-  "author": "Adam Faryna (faryna.io)",
+  "author": "Adam Faryna (https://faryna.io)",
   "license": "MIT",
   "devDependencies": {
     "prettier": "^3.0.3",
