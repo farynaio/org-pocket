@@ -28,7 +28,7 @@ This file should be copied to `.env`. Default variables values can be used. Thei
 As this app relies on [NodeJS fs.watch](https://nodejs.org/docs/latest/api/fs.html#fswatchfilename-options-listener) API, it requires one of notification systems, dependent on the OS you plan to host this app - check [list of options](https://nodejs.org/docs/latest/api/fs.html#availability).
 
 Other requirements:
-- node
+- [node](https://nodejs.org)
 - npm
 
 ## Instalation
