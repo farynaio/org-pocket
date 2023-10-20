@@ -49,7 +49,7 @@ class UrlProcessor {
   downloadWebsite() {
     const archiveFilename = this.getArchiveFilename()
     const archivePath = `${WWW_STORE}/${archiveFilename}`
-    const result = execSync(`touch "${archivePath}"`)
+    const result = execSync(`monolith -a -f -F -j -k -M -s -v -o "${archivePath}"`)
     if (result instanceof Error) {
       logger.error(`Downloading ${this.url.toString()} failed`)
       throw error
