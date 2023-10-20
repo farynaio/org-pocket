@@ -4,7 +4,7 @@ Simple app that mimics [Pocket app](https://www.mozilla.org/en-US/firefox/pocket
 
 ## How it works
 
-The app watches for changes in [org-mode](https://orgmode.org/) file DOWNLOAD_FILE (see in [.env.example](https://github.com/farynaio/pocket)), and downloads every URL provided as a heading title.
+The app watches for changes in [org-mode](https://orgmode.org/) file DOWNLOAD_FILE (see in [.env.example](https://github.com/farynaio/pocket#envexample-file)), and downloads every URL provided as a heading title.
 
 By default [Monolith](https://github.com/Y2Z/monolith) is used for downloading webpages, and is required for the app to run.
 
