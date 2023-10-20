@@ -26,8 +26,4 @@ RUN set -ex; \
 
 WORKDIR "/app"
 
-# RUN npm i
-
 ENTRYPOINT ["./entrypoint.sh"]
-# CMD ["npm", "start"]
-# CMD ["tail", "-f", "/bin/sh"]
