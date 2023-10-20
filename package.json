@@ -1,14 +1,13 @@
 {
   "name": "pocket",
   "version": "1.0.0",
-  "description": "",
-  "main": "src/index.js",
+  "description": "Self hosted Pocket app alternative",
   "scripts": {
     "start": "nodemon ./src/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["pocket", "self-hosted", "foss"],
+  "author": "Adam Faryna (faryna.io)",
+  "license": "MIT",
   "devDependencies": {
     "prettier": "^3.0.3",
     "ts-node": "^10.9.1"
