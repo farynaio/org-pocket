@@ -8,21 +8,11 @@ RUN cargo install monolith
 
 ENV PATH "$PATH:/root/.cargo/bin"
 
-# RUN
- # mkdir /app \
-    # && mkdir /pocket \
-    # && chown user /pocket
-
 RUN set -ex; \
     apk add --no-cache shadow; \
-    # deluser www-data; \
-    addgroup -g 33 -S git; \
-    adduser -u 33 -D -S -G git git; \
-    chown git:git -R /pocket;
+    chown 1000:1000 -R /pocket;
 
-# RUN addgroup -g 1000 user \
-    # && adduser -u 1000 -G user -s /bin/sh -D user
-# USER user
+USER 1000
 
 WORKDIR "/app"
 
