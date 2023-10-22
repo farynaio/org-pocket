@@ -58,7 +58,7 @@ class UrlProcessor {
   }
 
   generateWebArchiveLink() {
-    return "https://gnu.org"
+    throw new Error("not implemented")
   }
 
   async addPocketRecord() {
@@ -71,7 +71,6 @@ class UrlProcessor {
 
 
 [[~/Sync/org-agenda-repo/pocket/public/${this.getArchiveFilename()}][Desktop link]]
-
 
 `
     // [[${webArchiveLink}][Web archive link]]
