@@ -52,4 +52,5 @@ VPS may be skipped, and both devices can communicate directly if needed, but per
 
 ## TODO
 
+- [ ] trigger Syncthing rescan event after processing entire queue
 - [ ] create additional archive with archive.org if URL is not already archive.org archive
