@@ -50,4 +50,6 @@ After files are synced with the VPS, the app processes DOWNLOAD_FILE, archive al
 
 VPS may be skipped, and both devices can communicate directly if needed, but personally I found having always online VPS as a sharing instance preferable solution.
 
-Enjoy!
+## TODO
+
+- [ ] create additional archive with archive.org if URL is not already archive.org archive
