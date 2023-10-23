@@ -26,7 +26,7 @@ class UrlProcessor {
   }
 
   getArchiveFilename(withDatePrefix=true) {
-    const title = this.url.pathname.replaceAll("/", "_");
+    const title = this.url.pathname.replaceAll("/", "_").replaceAll(":", "");
     const now = new Date();
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
