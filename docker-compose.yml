@@ -7,5 +7,5 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./:/app
-      - ./pocket:/pocket
+      - ../pocket:/pocket
     restart: unless-stopped
