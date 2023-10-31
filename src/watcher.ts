@@ -1,8 +1,10 @@
-const events = require("events")
-const chokidar = require("chokidar")
+import events from "events"
+import chokidar from "chokidar"
 
-class Watcher extends events.EventEmitter {
-  constructor(watchFile) {
+export class Watcher extends events.EventEmitter {
+  watchFile: string
+
+  constructor(watchFile: string) {
     super();
     this.watchFile = watchFile;
   }
@@ -15,5 +17,3 @@ class Watcher extends events.EventEmitter {
     });
   }
 }
-
-module.exports = Watcher

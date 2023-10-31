@@ -1,10 +1,12 @@
-class Tags {
-  constructor(line) {
+export class Tags {
+  tags: string[]
+
+  constructor(line: string) {
     let tags = /  :.*:$/.exec(line)
     this.tags = tags ? tags[0].trim().split(':').filter(i => i) : []
   }
 
-  addTag(tag) {
+  addTag(tag: string) {
     if (!this.tags.includes(tag)) this.tags.push(tag)
   }
 
@@ -16,5 +18,3 @@ class Tags {
     return `:${this.tags.join(':')}:`
   }
 }
-
-module.exports = Tags

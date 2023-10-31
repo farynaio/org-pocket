@@ -1,6 +1,6 @@
-const pino = require('pino');
+import pino from 'pino'
 
-const logger = pino({
+export const logger = pino({
   level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
   transport: {
     target: 'pino-pretty',
@@ -9,5 +9,3 @@ const logger = pino({
     },
   },
 });
-
-module.exports.logger = logger;

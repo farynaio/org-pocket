@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "description": "Self hosted Pocket app alternative",
   "scripts": {
-    "start": "nodemon ./src/index.js"
+    "start": "nodemon ./src/index.ts"
   },
-  "keywords": ["pocket", "self-hosted", "foss"],
+  "keywords": [
+    "pocket",
+    "self-hosted",
+    "foss"
+  ],
   "author": "Adam Faryna (https://faryna.io)",
   "license": "MIT",
   "devDependencies": {

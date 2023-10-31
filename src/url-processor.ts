@@ -1,20 +1,22 @@
-const fs = require("fs");
-const prependFile = require('prepend-file');
-const { execSync } = require("child_process");
+import fs from "fs"
+import prependFile from 'prepend-file'
+import { execSync } from "child_process"
 
-const { logger } = require("./logger");
+import { logger } from "./logger"
 
 const POCKET_FILE = process.env.POCKET_FILE;
 const WWW_STORE = process.env.WWW_STORE;
 
-class UrlProcessor {
-  constructor(record) {
+export class UrlProcessor {
+  record: string
+  url: URL
+
+  constructor(record: string) {
     this.record = record
-    this.url = null
   }
 
   async process() {
-    if (this.record.length) {
+    if (this.record?.startsWith("*")) {
       const url = /(https?:\/\/[^ ]*)/.exec(this.record)?.at(0)
       if (!url) throw Error(`Invalid record ${this.record}`);
       this.url = new URL(url);
@@ -52,7 +54,7 @@ class UrlProcessor {
     const result = execSync(`monolith -a -f -F -j -k -M -s -v -o "${archivePath}" ${this.url.toString()}`)
     if (result instanceof Error) {
       logger.error(`Downloading ${this.url.toString()} failed`)
-      throw error
+      throw result
     }
     logger.info(`Downloaded ${this.url.toString()} successfully`)
   }
@@ -78,5 +80,3 @@ class UrlProcessor {
     await prependFile(POCKET_FILE, data)
   }
 }
-
-module.exports = UrlProcessor;
