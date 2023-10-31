@@ -1,7 +1,6 @@
 import fs from "fs"
 import prependFile from 'prepend-file'
 import { execSync } from "child_process"
-
 import { logger } from "./logger"
 
 const POCKET_FILE = process.env.POCKET_FILE;
@@ -20,7 +19,11 @@ export class UrlProcessor {
       const url = /(https?:\/\/[^ ]*)/.exec(this.record)?.at(0)
       if (!url) throw Error(`Invalid record ${this.record}`);
       this.url = new URL(url);
-      if (!this.duplicateDownloadExists()) {
+
+      if (this.duplicateDownloadExists()) {
+        logger.info(`URL 'url' already archived, skipping`)
+
+      } else {
         this.downloadWebsite()
         await this.addPocketRecord()
       }
