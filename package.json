@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Self hosted Pocket app alternative",
   "scripts": {
-    "start": "nodemon ./src/index.ts",
-    "lint": "eslint . --ext .ts"
+    "start": "NODE_ENV=production nodemon -r dotenv-expand/config ./src/index.ts",
+    "dev": "NODE_ENV=development nodemon -r dotenv-expand/config ./src/index.ts",
     "lint": "eslint . --ext .ts",
     "prettier": "prettier . --write"
   },
