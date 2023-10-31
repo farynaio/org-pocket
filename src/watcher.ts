@@ -1,8 +1,8 @@
-import events from "events"
-import chokidar from "chokidar"
+import events from "events";
+import chokidar from "chokidar";
 
 export class Watcher extends events.EventEmitter {
-  watchFile: string
+  watchFile: string;
 
   constructor(watchFile: string) {
     super();
@@ -10,10 +10,12 @@ export class Watcher extends events.EventEmitter {
   }
 
   start() {
-    chokidar.watch(this.watchFile, {
-      persistent: true,
-    }).on("change", () => {
-      this.emit("process");
-    });
+    chokidar
+      .watch(this.watchFile, {
+        persistent: true,
+      })
+      .on("change", () => {
+        this.emit("process");
+      });
   }
 }

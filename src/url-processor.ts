@@ -1,69 +1,74 @@
-import fs from "fs"
-import prependFile from 'prepend-file'
-import { execSync } from "child_process"
-import { logger } from "./logger"
+import fs from "fs";
+import prependFile from "prepend-file";
+import { execSync } from "child_process";
+import { logger } from "./logger";
 
 const POCKET_FILE = process.env.POCKET_FILE;
 const WWW_STORE = process.env.WWW_STORE;
 
 export class UrlProcessor {
-  record: string
-  url: URL
+  record: string;
+  url: URL;
 
   constructor(record: string) {
-    this.record = record
+    this.record = record;
   }
 
   async process() {
     if (this.record?.startsWith("*")) {
-      const url = /(https?:\/\/[^ ]*)/.exec(this.record)?.at(0)
+      const url = /(https?:\/\/[^ ]*)/.exec(this.record)?.at(0);
       if (!url) throw Error(`Invalid record ${this.record}`);
       this.url = new URL(url);
 
       if (this.duplicateDownloadExists()) {
-        logger.info(`URL 'url' already archived, skipping`)
-
+        logger.info(`URL '${url}' already archived, skipping`);
       } else {
-        this.downloadWebsite()
-        await this.addPocketRecord()
+        this.downloadWebsite();
+        await this.addPocketRecord();
       }
     }
   }
 
-  getArchiveFilename(withDatePrefix=true) {
+  getArchiveFilename(withDatePrefix = true) {
     const title = this.url.pathname.replaceAll("/", "_").replaceAll(":", "");
     const now = new Date();
     const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const datePrefix = `${year}${month}${day}${hours}${minutes}`
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const datePrefix = `${year}${month}${day}${hours}${minutes}`;
     const result = `${this.url.host}${title}${this.url.pathname.endsWith(".html") ? "" : ".html"}`;
-    return withDatePrefix ? `${datePrefix}_${result}` : result
+    return withDatePrefix ? `${datePrefix}_${result}` : result;
   }
 
   duplicateDownloadExists() {
-    const archiveFilenameSuffix = this.getArchiveFilename(false).replace(/\.html$/, '')
+    const archiveFilenameSuffix = this.getArchiveFilename(false).replace(/\.html$/, "");
     for (const file of fs.readdirSync(WWW_STORE)) {
-      if (file.replace(/\.html$/, '').endsWith(archiveFilenameSuffix)) return true
+      if (file.replace(/\.html$/, "").endsWith(archiveFilenameSuffix)) return true;
     }
-    return false
+    return false;
   }
 
   downloadWebsite() {
-    const archiveFilename = this.getArchiveFilename()
-    const archivePath = `${WWW_STORE}/${archiveFilename}`
-    const result = execSync(`monolith -a -f -F -j -k -M -s -v -o "${archivePath}" ${this.url.toString()}`)
-    if (result instanceof Error) {
-      logger.error(`Downloading ${this.url.toString()} failed`)
-      throw result
+    const archiveFilename = this.getArchiveFilename();
+    const archivePath = `${WWW_STORE}/${archiveFilename}`;
+
+    if (process.env.NODE_ENV === "production") {
+      const result = execSync(`monolith -a -f -F -j -k -M -s -v -o "${archivePath}" ${this.url.toString()}`);
+      if (result instanceof Error) {
+        logger.error(`Downloading ${this.url.toString()} failed`);
+        throw result;
+      }
+    } else {
+      execSync(`touch "${archivePath}"`);
     }
-    logger.info(`Downloaded ${this.url.toString()} successfully`)
+
+    logger.info(`Downloaded ${this.url.toString()} successfully`);
   }
 
   generateWebArchiveLink() {
-    throw new Error("not implemented")
+    throw new Error("not implemented");
   }
 
   async addPocketRecord() {
@@ -77,9 +82,9 @@ export class UrlProcessor {
 
 [[~/Sync/org-agenda-repo/pocket/public/${this.getArchiveFilename()}][Desktop link]]
 
-`
+`;
     // [[${webArchiveLink}][Web archive link]]
 
-    await prependFile(POCKET_FILE, data)
+    await prependFile(POCKET_FILE, data);
   }
 }

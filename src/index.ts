@@ -1,11 +1,13 @@
-import dotenv from "dotenv"
-import dotenvExpand from "dotenv-expand"
-import fs from "fs"
-import { logger } from "./logger"
-import { UrlProcessor } from "./url-processor"
-import { Watcher } from "./watcher"
+import dotenv from "dotenv";
+import dotenvExpand from "dotenv-expand";
+import fs from "fs";
+import { logger } from "./logger";
+import { UrlProcessor } from "./url-processor";
+import { Watcher } from "./watcher";
 
 dotenvExpand.expand(dotenv.config());
+
+logger.info(`App run in ${process.env.NODE_ENV} environment`);
 
 const DOWNLOAD_FILE = process.env.DOWNLOAD_FILE;
 

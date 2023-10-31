@@ -30,6 +30,7 @@ This file should be copied to `.env`. Default variables values can be used. Thei
 As this app relies on [NodeJS fs.watch](https://nodejs.org/docs/latest/api/fs.html#fswatchfilename-options-listener) API, it requires one of notification systems, dependent on the OS you plan to host this app - check [list of options](https://nodejs.org/docs/latest/api/fs.html#availability).
 
 Other requirements:
+
 - [Syncthing](https://syncthing.net)
 - [Monolith](https://github.com/Y2Z/monolith)
 - [node](https://nodejs.org)
@@ -44,7 +45,7 @@ Other requirements:
 
 ## Example use scenario
 
-The app is meant to be used together with [Syncthing](https://syncthing.net/) on VPS, laptop and  mobile. VPS as a DB_DIR host, share it with other devices. URLs to download can be added via Emacs `org-capture` command on desktop, and via [Orgzly](https://orgzly.com/) notes capture feature on mobile.
+The app is meant to be used together with [Syncthing](https://syncthing.net/) on VPS, laptop and mobile. VPS as a DB_DIR host, share it with other devices. URLs to download can be added via Emacs `org-capture` command on desktop, and via [Orgzly](https://orgzly.com/) notes capture feature on mobile.
 
 After files are synced with the VPS, the app processes DOWNLOAD_FILE, archive all URLs, and share it across devices, together with POCKET_FILE which is used as an access point to downloaded wepages (thanks to org-mode links), also as a place for storing related notes, and tags.
 

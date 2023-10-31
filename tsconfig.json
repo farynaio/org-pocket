@@ -11,10 +11,6 @@
     "lib": ["es2021"],
     "preserveConstEnums": true
   },
-  "exclude": [
-    "node_modules"
-  ],
-  "include": [
-    "src/**/*.ts"
-  ]
+  "exclude": ["node_modules"],
+  "include": ["src/**/*.ts"]
 }
