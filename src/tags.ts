@@ -2,7 +2,7 @@ export class Tags {
   tags: string[]
 
   constructor(line: string) {
-    let tags = /  :.*:$/.exec(line)
+    const tags = / {2}:.*:$/.exec(line)
     this.tags = tags ? tags[0].trim().split(':').filter(i => i) : []
   }
 
