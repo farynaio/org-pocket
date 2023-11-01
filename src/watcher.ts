@@ -1,7 +1,7 @@
-import events from "events";
+import { EventEmitter } from "events";
 import chokidar from "chokidar";
 
-export class Watcher extends events.EventEmitter {
+export class Watcher extends EventEmitter {
   watchFile: string;
 
   constructor(watchFile: string) {
