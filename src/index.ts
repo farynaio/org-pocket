@@ -92,6 +92,8 @@ async function rescanSyncthing() {
   } catch (e) {
     logger.error(e);
   }
+
+  logger.info(`Folder ${DB_DIR} rescanned successfully`);
 }
 
 watcher.start();
