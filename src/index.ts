@@ -1,7 +1,9 @@
+import fs from "fs";
+import dns from "dns";
 import process from "process";
+import { setGlobalDispatcher, Agent } from "undici";
 import dotenv from "dotenv";
 import dotenvExpand from "dotenv-expand";
-import fs from "fs";
 import { logger } from "./logger";
 import { UrlProcessor } from "./url-processor";
 import { Watcher } from "./watcher";
@@ -28,6 +30,14 @@ if (isProduction()) {
 if (!process.env.DB_DIR || !process.env.POCKET_FILE || !process.env.WWW_STORE) {
   process.exit(1);
 }
+
+setGlobalDispatcher(new Agent({ connect: { timeout: 60_000 } }));
+dns.setDefaultResultOrder("ipv4first");
+
+const DB_DIR = process.env.DB_DIR;
+const ST_URL = process.env.ST_URL;
+const ST_API_KEY = process.env.ST_API_KEY;
+const ST_FOLDER_ID = process.env.ST_FOLDER_ID;
 const DOWNLOAD_FILE = process.env.DOWNLOAD_FILE;
 
 if (!DOWNLOAD_FILE) logger.error(`'DOWNLOAD_FILE' value not provided!`);
@@ -60,7 +70,28 @@ watcher.on("process", async () => {
         logger.info(`Cleared ${DOWNLOAD_FILE}`);
       }
     }
+
+    if (isProduction()) {
+      await rescanSyncthing();
+    }
   }
 });
+
+async function rescanSyncthing() {
+  logger.info(`Rescaning folder ${DB_DIR}`);
+
+  try {
+    const res = await fetch(`${ST_URL}/rest/db/scan?folder=${ST_FOLDER_ID}`, {
+      method: "POST",
+      headers: {
+        "X-API-Key": ST_API_KEY,
+      },
+    });
+
+    if (!res.ok) logger.error(`Syncthing folder rescan failed! ${res.status}: ${res.statusText}`);
+  } catch (e) {
+    logger.error(e);
+  }
+}
 
 watcher.start();
