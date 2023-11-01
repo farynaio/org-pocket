@@ -16,4 +16,7 @@ USER 1000
 
 WORKDIR "/app"
 
-ENTRYPOINT ["./entrypoint.sh"]
+RUN npm i
+CMD npm start
+
+# ENTRYPOINT ["./entrypoint.sh"]
