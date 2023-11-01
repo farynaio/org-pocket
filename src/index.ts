@@ -78,7 +78,7 @@ watcher.on("process", async () => {
 });
 
 async function rescanSyncthing() {
-  logger.info(`Rescaning folder ${DB_DIR}`);
+  logger.info(`Syncthing folder ${DB_DIR} rescanning`);
 
   try {
     const res = await fetch(`${ST_URL}/rest/db/scan?folder=${ST_FOLDER_ID}`, {
@@ -90,10 +90,10 @@ async function rescanSyncthing() {
 
     if (!res.ok) logger.error(`Syncthing folder rescan failed! ${res.status}: ${res.statusText}`);
   } catch (e) {
-    logger.error(e);
+    logger.error(`Syncthing folder ${DB_DIR} rescan failed! ${e}`);
   }
 
-  logger.info(`Folder ${DB_DIR} rescanned successfully`);
+  logger.info(`Syncthing folder ${DB_DIR} rescanned successfully`);
 }
 
 watcher.start();
